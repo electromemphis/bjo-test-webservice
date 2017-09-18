@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+      
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+ 	
+ 	    
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<property name="maxUploadSize" value="50000000" />
+	</bean>
+	
+    <!-- Enables the Spring MVC @Controller programming model -->
+    <mvc:annotation-driven />
+
+	
+ 	<context:property-placeholder location="classpath:application.properties" />
+ 	
+   <!-- for processing requests with annotated controller methods and set Message Convertors from the list of convertors -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+        <property name="messageConverters">
+            <list>
+                <ref bean="jsonMessageConverter"/>
+            </list>
+        </property>
+    </bean>
+ 
+    <!-- To  convert JSON to Object and vice versa -->
+    <bean id="jsonMessageConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+    </bean>
+    
+	<!-- 
+ <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="smtp.gmail.com" />
+	<property name="port" value="587" />
+ 	<property name="username" value="${mail.username}" />
+	<property name="password" value="${mail.password}" />
+    <property name="javaMailProperties">
+	 <props>
+	 		<prop key="mail.transport.protocol">smtp</prop>
+       	      <prop key="mail.smtp.auth">true</prop>
+       	      <prop key="mail.smtp.starttls.enable">true</prop>
+      </props>
+	</property>
+  </bean>
+	 -->    	
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host" value="wksmtphub.wk.dcx.com" />
+		<property name="port" value="25" />
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.transport.protocol">smtp</prop>
+				<prop key="mail.debug">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="emailService" class="com.restful.mail.EmailService"></bean>
+											
+     <bean id="emailTemplateResolver" class="org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver">
+ 		<property name="prefix" value="classpath:/templates/" />
+		<property name="suffix" value=".html" />
+ 		<property name="templateMode" value="HTML5" />
+        <property name="cacheable" value="false"/>
+ 	</bean>
+  
+	<bean id="emailTemplateEngine" class="org.thymeleaf.spring4.SpringTemplateEngine">
+		<property name="templateResolvers">
+			<set>
+				<ref bean="emailTemplateResolver"/>
+			</set>
+		</property>
+ 	</bean>
+ 	
+    <context:component-scan base-package="com.restful" />
+ 
+</beans>
